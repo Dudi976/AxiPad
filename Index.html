@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="data:,">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Padel ekipa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eef3f4; --surface:#ffffff; --ink:#10252d; --muted:#5a6e75; --line:#d5e0e3;
+  --court:#0d6f92; --court-ink:#ffffff; --ball:#dfe52a;
+  --yes:#1b7f48; --maybe:#a56a0b; --no:#b83a2e;
+  --yes-bg:#e1f3e8; --maybe-bg:#faefd6; --no-bg:#f9e2de; --court-bg:#dcedf3;
+  --display:'Barlow Condensed','Arial Narrow',Impact,sans-serif;
+  --body:'Barlow',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0c1a20; --surface:#14262e; --ink:#e6f0f3; --muted:#93aab2; --line:#27414b;
+    --court:#4cb8dc; --court-ink:#06222c; --ball:#dfe52a;
+    --yes:#58c98a; --maybe:#e3a94a; --no:#ee7f72;
+    --yes-bg:#173a29; --maybe-bg:#3a2d12; --no-bg:#40201c; --court-bg:#143644;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0c1a20; --surface:#14262e; --ink:#e6f0f3; --muted:#93aab2; --line:#27414b;
+  --court:#4cb8dc; --court-ink:#06222c; --ball:#dfe52a;
+  --yes:#58c98a; --maybe:#e3a94a; --no:#ee7f72;
+  --yes-bg:#173a29; --maybe-bg:#3a2d12; --no-bg:#40201c; --court-bg:#143644;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.4}
+body{min-height:100%}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--court);outline-offset:2px}
+.wrap{max-width:720px;margin:0 auto;padding:16px 16px 72px}
+header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:14px}
+h1{font-family:var(--display);font-weight:700;font-size:40px;line-height:1;margin:0;letter-spacing:.01em;text-transform:uppercase}
+.sub{margin:4px 0 0;color:var(--muted);font-size:14px}
+.who{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:14px;cursor:pointer;max-width:45%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+nav.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:16px;position:sticky;top:8px;z-index:5}
+nav.tabs button{border:0;background:transparent;border-radius:9px;padding:10px 4px;font-weight:600;font-size:15px;cursor:pointer;color:var(--muted)}
+nav.tabs button[aria-current="page"]{background:var(--court);color:var(--court-ink)}
+h2{font-family:var(--display);font-size:26px;font-weight:700;margin:22px 0 10px;text-transform:uppercase;letter-spacing:.01em}
+h2:first-child{margin-top:0}
+h3{font-family:var(--display);font-size:22px;font-weight:700;margin:0;line-height:1.1}
+.stack{display:flex;flex-direction:column;gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:12px}
+.card.muted{opacity:.7}
+.ch{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.meta{margin:4px 0 0;color:var(--muted);font-size:14px}
+.badge{display:inline-block;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--court-bg);color:var(--court);white-space:nowrap}
+.badge.warn{background:var(--maybe-bg);color:var(--maybe)}
+.badge.ok{background:var(--yes-bg);color:var(--yes)}
+.badge.bad{background:var(--no-bg);color:var(--no)}
+.votes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.vote{border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 6px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:14px}
+.vote b{font-family:var(--display);font-size:22px;line-height:1}
+.vote.yes.on{background:var(--yes-bg);border-color:var(--yes);color:var(--yes)}
+.vote.maybe.on{background:var(--maybe-bg);border-color:var(--maybe);color:var(--maybe)}
+.vote.no.on{background:var(--no-bg);border-color:var(--no);color:var(--no)}
+.names{font-size:14px}
+.names .lbl{font-weight:600}
+.names.yes .lbl{color:var(--yes)} .names.maybe .lbl{color:var(--maybe)} .names.no .lbl{color:var(--no)}
+.btn{border:0;background:var(--court);color:var(--court-ink);border-radius:10px;padding:10px 16px;font-weight:600;cursor:pointer}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--muted);border:1px solid var(--line);padding:6px 10px;font-size:13px;font-weight:500}
+.btn.ghost.danger{color:var(--no);border-color:var(--no)}
+.btn.sec{background:var(--court-bg);color:var(--court)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+form.grid,.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid .full{grid-column:1/-1}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);font-weight:500}
+input[type=text],input[type=date],input[type=time],input[type=number]{border:1px solid var(--line);background:var(--bg);border-radius:9px;padding:9px 10px;width:100%;min-width:0}
+details.card>summary{cursor:pointer;font-weight:600;list-style:none;font-family:var(--display);font-size:20px;text-transform:uppercase}
+details.card>summary::-webkit-details-marker{display:none}
+details.card>summary::before{content:'+';display:inline-block;width:1.2em;color:var(--court)}
+details.card[open]>summary::before{content:'\2212'}
+details.card[open]>summary{margin-bottom:12px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 12px;cursor:pointer;font-size:14px;font-weight:500}
+.chip.sel{background:var(--court);border-color:var(--court);color:var(--court-ink)}
+.chip small{opacity:.8;margin-left:4px}
+.chip.s-yes{border-color:var(--yes)} .chip.s-maybe{border-color:var(--maybe)} .chip.s-no{opacity:.55}
+.sec-t{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:0}
+.lineup-text{margin:0;padding:10px 12px;border-radius:9px;background:var(--bg);font-size:14px;user-select:text;white-space:pre-line}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:15px}
+th,td{padding:8px 6px;text-align:right;border-bottom:1px solid var(--line)}
+th{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+th:nth-child(2),td:nth-child(2){text-align:left;width:100%}
+th:first-child,td:first-child{text-align:left;padding-left:2px}
+td.pts{font-family:var(--display);font-weight:700;font-size:20px}
+.rank{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;font-weight:700;font-size:13px;background:var(--bg)}
+.rank.first{background:var(--ball);color:#10252d}
+.tw{overflow-x:auto}
+.round{display:flex;flex-direction:column;gap:8px}
+.match{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.match .side{font-size:14px;font-weight:500}
+.match .side.r{text-align:right}
+.match .sc{display:flex;gap:6px;align-items:center;font-family:var(--display);font-size:22px}
+.match .sc input{width:56px;text-align:center;font-size:18px;padding:8px 4px}
+.empty{padding:22px 14px;text-align:center;color:var(--muted);border:1.5px dashed var(--line);border-radius:14px}
+.banner{background:var(--court-bg);border:1px solid var(--court);border-radius:14px;padding:14px;margin-bottom:14px;display:flex;flex-direction:column;gap:10px}
+.note{font-size:13px;color:var(--muted);margin:0}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90%;z-index:20}
+#toast.show{opacity:1}
+@media (prefers-reduced-motion: reduce){#toast{transition:none}}
+@media (max-width:420px){h1{font-size:34px}form.grid,.grid{grid-template-columns:1fr}.match{grid-template-columns:1fr auto 1fr;gap:6px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Padel ekipa</h1>
+      <p class="sub" id="sub">Termini, liga i bodovi</p>
+    </div>
+    <button class="who" id="who" type="button" hidden></button>
+  </header>
+  <nav class="tabs" aria-label="Odjeljci">
+    <button type="button" data-tab="termini">Termini</button>
+    <button type="button" data-tab="liga">Liga</button>
+    <button type="button" data-tab="vecer">Večer</button>
+    <button type="button" data-tab="ljestvica">Ljestvica</button>
+  </nav>
+  <main id="app"><div class="empty">Učitavam…</div></main>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.min.js"></script>
+<script>
+(function(){
+'use strict';
+var $=function(s){return document.querySelector(s)};
+var esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
+var app=$('#app');
+var uid=null;
+var S={players:{},events:{},rsvps:{},lineups:{},nights:{},scores:{},loaded:{},tab:'termini',openNight:null,confirm:'',nn:{sel:{}},renaming:false,pending:false,slow:false,err:''};
+var TABS=['termini','liga','vecer','ljestvica'];
+
+function pad(n){return (n<10?'0':'')+n}
+function iso(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+function addDays(s,n){var d=new Date(s+'T12:00:00');d.setDate(d.getDate()+n);return iso(d)}
+function fmtLong(s){return new Date(s+'T12:00:00').toLocaleDateString('hr-HR',{weekday:'long',day:'numeric',month:'long'})}
+function fmtShort(s){return new Date(s+'T12:00:00').toLocaleDateString('hr-HR',{day:'numeric',month:'numeric'})+'.'}
+function daysBetween(a,b){return Math.round((new Date(b+'T12:00:00')-new Date(a+'T12:00:00'))/86400000)}
+function nameOf(id){var p=S.players[id];return (p&&p.name)||'Igrač'}
+function toast(t){var el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(function(){el.classList.remove('show')},2600)}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+
+var CFG={url:'https://jftleygvlkufzquacdzo.supabase.co',key:'sb_publishable_ms_cRRvCglYyobSidU1-Ig_6y0qsatf'};
+var sb=null;
+var TABLES=['players','events','rsvps','lineups','nights','scores'];
+function newId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
+function run(p){
+  return Promise.resolve(p).then(function(r){if(r&&r.error)throw r.error;return r}).catch(function(e){
+    console.error(e);toast('Spremanje nije uspjelo. Provjeri vezu i pokušaj ponovno.');
+  });
+}
+function build(t,rows){
+  var m={};
+  rows.forEach(function(r){
+    if(t==='players')m[r.id]={name:r.name,guest:!!r.guest};
+    else if(t==='events')m[r.id]={title:r.title,date:r.date,time:r.time,place:r.place,opponent:r.opponent};
+    else if(t==='rsvps'){var o=m[r.player_id]||(m[r.player_id]={votes:{}});o.votes[r.event_id]=r.vote}
+    else if(t==='lineups')m[r.event_id]={players:r.players||[],sent:!!r.sent};
+    else if(t==='nights')m[r.id]={name:r.name,date:r.date,target:r.target||0,players:r.players||[],matches:r.matches||[]};
+    else if(t==='scores'){var s=m[r.night_id]||(m[r.night_id]={});if(r.a!==null)s[r.key+'a']=r.a;if(r.b!==null)s[r.key+'b']=r.b}
+  });
+  return m;
+}
+function refresh(t){
+  return sb.from(t).select('*').then(function(res){
+    if(res.error){S.err=res.error.message||'greška';render();return}
+    S.err='';S[t]=build(t,res.data||[]);S.loaded[t]=true;render();
+  });
+}
+var timers={};
+function scheduleRefresh(t){clearTimeout(timers[t]);timers[t]=setTimeout(function(){refresh(t)},150)}
+
+function votesFor(eid){
+  var out={yes:[],maybe:[],no:[]};
+  Object.keys(S.rsvps).forEach(function(u){
+    var v=S.rsvps[u]&&S.rsvps[u].votes&&S.rsvps[u].votes[eid];
+    if(out[v]) out[v].push(u);
+  });
+  return out;
+}
+function myVote(eid){var r=S.rsvps[uid];return (r&&r.votes&&r.votes[eid])||''}
+function playerIds(){return Object.keys(S.players).sort(function(a,b){return nameOf(a).localeCompare(nameOf(b),'hr')})}
+function nextMondays(n){
+  var d=new Date();d.setHours(12,0,0,0);
+  while(d.getDay()!==1)d.setDate(d.getDate()+1);
+  var out=[];for(var i=0;i<n;i++){out.push(iso(d));d.setDate(d.getDate()+7)}
+  return out;
+}
+function makeMatches(ids){
+  var n=ids.length,k=n-1,out=[];
+  for(var r=0;r<k;r++){
+    var arr=[ids[n-1]];
+    for(var i=0;i<k;i++)arr.push(ids[(i+r)%k]);
+    var pairs=[];
+    for(var j=0;j<n/2;j++)pairs.push([arr[j],arr[n-1-j]]);
+    for(var m=0;m<pairs.length;m+=2){
+      out.push({r:r,m:m/2,a1:pairs[m][0],a2:pairs[m][1],b1:pairs[m+1][0],b2:pairs[m+1][1]});
+    }
+  }
+  return out;
+}
+function scoreOf(nid,x){
+  var sc=S.scores[nid]||{};var k=x.r+'_'+x.m;
+  var a=sc[k+'a'],b=sc[k+'b'];
+  return {a:(typeof a==='number')?a:null,b:(typeof b==='number')?b:null};
+}
+function addStat(map,id,pts,opp){
+  var s=map[id]||(map[id]={id:id,matches:0,wins:0,pts:0,diff:0,nights:{}});
+  s.matches++;s.pts+=pts;s.diff+=pts-opp;if(pts>opp)s.wins++;
+}
+function standings(nids){
+  var map={};
+  nids.forEach(function(nid){
+    var n=S.nights[nid];if(!n||!n.matches)return;
+    n.matches.forEach(function(x){
+      var s=scoreOf(nid,x);if(s.a===null||s.b===null)return;
+      [x.a1,x.a2].forEach(function(p){addStat(map,p,s.a,s.b);map[p].nights[nid]=1});
+      [x.b1,x.b2].forEach(function(p){addStat(map,p,s.b,s.a);map[p].nights[nid]=1});
+    });
+  });
+  return Object.keys(map).map(function(k){var s=map[k];s.nightCount=Object.keys(s.nights).length;s.avg=s.matches?s.pts/s.matches:0;return s})
+    .sort(function(a,b){return b.pts-a.pts||b.diff-a.diff||b.wins-a.wins});
+}
+function nightProgress(nid){
+  var n=S.nights[nid];if(!n||!n.matches)return {done:0,total:0};
+  var done=0;n.matches.forEach(function(x){var s=scoreOf(nid,x);if(s.a!==null&&s.b!==null)done++});
+  return {done:done,total:n.matches.length};
+}
+
+function nameBanner(){
+  var mine=S.players[uid];
+  if(mine&&!S.renaming)return '';
+  return '<section class="banner"><strong>'+(mine?'Promijeni ime':'Kako da te upišemo?')+'</strong>'+
+    '<div class="row"><input type="text" id="my-name" data-keep maxlength="30" placeholder="Ime i prezime ili nadimak" value="'+esc(mine?mine.name:'')+'" style="flex:1;min-width:180px">'+
+    '<button class="btn" type="button" data-act="saveName">Spremi</button></div>'+
+    '<p class="note">Ime se prikazuje drugima u glasanju i na ljestvici.</p></section>';
+}
+function voteBlock(eid){
+  var v=votesFor(eid),mine=myVote(eid);
+  var labels={yes:'Dolazim',maybe:'Možda',no:'Ne dolazim'};
+  var head={yes:'Dolaze',maybe:'Možda',no:'Ne dolaze'};
+  var btns=['yes','maybe','no'].map(function(k){
+    return '<button type="button" class="vote '+k+(mine===k?' on':'')+'" data-act="vote" data-eid="'+esc(eid)+'" data-v="'+k+'" aria-pressed="'+(mine===k)+'">'+labels[k]+'<b>'+v[k].length+'</b></button>';
+  }).join('');
+  var names=['yes','maybe','no'].map(function(k){
+    return v[k].length?'<div class="names '+k+'"><span class="lbl">'+head[k]+':</span> '+v[k].map(function(id){return esc(nameOf(id))}).join(', ')+'</div>':'';
+  }).join('');
+  return '<div class="votes">'+btns+'</div>'+names;
+}
+function delBtn(key){
+  var on=S.confirm===key;
+  return '<button type="button" class="btn ghost'+(on?' danger':'')+'" data-act="del" data-key="'+esc(key)+'">'+(on?'Potvrdi brisanje':'Obriši')+'</button>';
+}
+function evCard(e,past){
+  return '<article class="card'+(past?' muted':'')+'"><div class="ch"><div><h3>'+esc(e.title||'Padel')+'</h3>'+
+    '<p class="meta">'+esc(fmtLong(e.date))+(e.time?' · '+esc(e.time):'')+(e.place?' · '+esc(e.place):'')+'</p></div>'+delBtn('ev:'+e.id)+'</div>'+
+    voteBlock(e.id)+'</article>';
+}
+function viewTermini(){
+  var today=iso(new Date());
+  var evs=Object.keys(S.events).filter(function(id){return id.indexOf('liga-')!==0}).map(function(id){var e=S.events[id];return Object.assign({id:id},e)});
+  var key=function(e){return (e.date||'')+(e.time||'')};
+  var up=evs.filter(function(e){return e.date>=today}).sort(function(a,b){return key(a)<key(b)?-1:1});
+  var past=evs.filter(function(e){return e.date<today}).sort(function(a,b){return key(a)<key(b)?1:-1}).slice(0,5);
+  var h='<h2>Nadolazeći termini</h2>';
+  h+=up.length?'<div class="stack">'+up.map(function(e){return evCard(e,false)}).join('')+'</div>':
+    '<div class="empty">Još nema termina. Dodaj prvi ispod i ekipa može odmah glasati.</div>';
+  h+='<h2>Novi termin</h2><details class="card" id="d-newev"'+(up.length?'':' open')+'><summary>Dodaj termin</summary><div class="grid">'+
+    '<label class="f full">Naziv<input type="text" id="ne-title" data-keep maxlength="60" placeholder="npr. Rekreacija srijeda"></label>'+
+    '<label class="f">Datum<input type="date" id="ne-date" data-keep></label>'+
+    '<label class="f">Vrijeme<input type="time" id="ne-time" data-keep></label>'+
+    '<label class="f full">Teren / lokacija<input type="text" id="ne-place" data-keep maxlength="60" placeholder="npr. Padel centar"></label>'+
+    '<div class="full"><button class="btn" type="button" data-act="addEvent">Dodaj termin</button></div></div></details>';
+  if(past.length)h+='<h2>Prošli termini</h2><div class="stack">'+past.map(function(e){return evCard(e,true)}).join('')+'</div>';
+  return h;
+}
+function ligaCard(date){
+  var eid='liga-'+date,meta=S.events[eid]||{},L=S.lineups[eid]||{};
+  var friday=addDays(date,-3),today=iso(new Date()),left=daysBetween(today,friday);
+  var sent=!!L.sent;
+  var badge=sent?'<span class="badge ok">Postava poslana</span>':
+    left<0?'<span class="badge bad">Rok za petak je prošao</span>':
+    left===0?'<span class="badge warn">Postava se šalje danas</span>':
+    '<span class="badge">Postava do petka, '+esc(fmtShort(friday))+'</span>';
+  var v=votesFor(eid),rank={yes:0,maybe:1,no:3};
+  var ids=playerIds().sort(function(a,b){
+    var ra=rank[a2s(a)]!==undefined?rank[a2s(a)]:2,rb=rank[a2s(b)]!==undefined?rank[a2s(b)]:2;
+    return ra-rb||nameOf(a).localeCompare(nameOf(b),'hr');
+  });
+  function a2s(id){return v.yes.indexOf(id)>-1?'yes':v.maybe.indexOf(id)>-1?'maybe':v.no.indexOf(id)>-1?'no':''}
+  var sel=L.players||[];
+  var chips=ids.map(function(id){
+    var st=a2s(id),on=sel.indexOf(id)>-1;
+    return '<button type="button" class="chip'+(on?' sel':'')+(st?' s-'+st:'')+'" data-act="toggleLineup" data-eid="'+eid+'" data-pid="'+esc(id)+'" aria-pressed="'+on+'">'+esc(nameOf(id))+(st==='maybe'?'<small>?</small>':'')+'</button>';
+  }).join('');
+  var text='Postava za ponedjeljak, '+fmtShort(date)+'\n'+sel.map(function(id,i){return (i+1)+'. '+nameOf(id)}).join('\n');
+  return '<article class="card"><div class="ch"><div><h3>Liga · '+esc(fmtLong(date))+'</h3>'+
+    '<p class="meta">'+[meta.time,meta.opponent?'protiv '+meta.opponent:'',meta.place].filter(Boolean).map(esc).join(' · ')+'</p></div>'+badge+'</div>'+
+    '<p class="sec-t">Tko može doći</p>'+voteBlock(eid)+
+    '<p class="sec-t">Postava za petak ('+sel.length+')</p>'+
+    '<div class="chips">'+(chips||'<span class="note">Nema upisanih igrača.</span>')+'</div>'+
+    (sel.length?'<p class="lineup-text">'+esc(text)+'</p>':'')+
+    '<div class="row"><button class="btn sec" type="button" data-act="copyLineup" data-eid="'+eid+'" data-date="'+date+'"'+(sel.length?'':' disabled')+'>Kopiraj postavu</button>'+
+    '<button class="btn'+(sent?' ghost':'')+'" type="button" data-act="toggleSent" data-eid="'+eid+'">'+(sent?'Vrati na neposlano':'Označi kao poslano')+'</button></div>'+
+    '<details id="d-meta-'+date+'"><summary class="note" style="cursor:pointer">Detalji susreta (vrijeme, protivnik, teren)</summary><div class="grid" style="margin-top:10px">'+
+    '<label class="f">Vrijeme<input type="time" id="lm-time-'+date+'" data-keep value="'+esc(meta.time||'')+'"></label>'+
+    '<label class="f">Protivnik<input type="text" id="lm-opp-'+date+'" data-keep maxlength="50" value="'+esc(meta.opponent||'')+'"></label>'+
+    '<label class="f full">Teren<input type="text" id="lm-place-'+date+'" data-keep maxlength="60" value="'+esc(meta.place||'')+'"></label>'+
+    '<div class="full"><button class="btn sec" type="button" data-act="saveLiga" data-date="'+date+'">Spremi detalje</button></div></div></details></article>';
+}
+function viewLiga(){
+  return '<h2>Business liga · ponedjeljak</h2><p class="note" style="margin:-4px 0 12px">Glasaj do kraja vikenda, a petkom se šalje postava. Dodirni igrače da ih staviš u postavu.</p>'+
+    '<div class="stack">'+nextMondays(3).map(ligaCard).join('')+'</div>';
+}
+function tableOf(rows,showNights){
+  if(!rows.length)return '<div class="empty">Još nema upisanih rezultata.</div>';
+  var h='<div class="tw"><table><thead><tr><th>#</th><th>Igrač</th>'+(showNights?'<th>Večeri</th>':'')+'<th>Mečeva</th><th>Pobjeda</th><th>Razlika</th><th>Bodovi</th>'+(showNights?'<th>Prosjek</th>':'')+'</tr></thead><tbody>';
+  rows.forEach(function(r,i){
+    h+='<tr><td><span class="rank'+(i===0?' first':'')+'">'+(i+1)+'</span></td><td>'+esc(nameOf(r.id))+'</td>'+
+      (showNights?'<td>'+r.nightCount+'</td>':'')+'<td>'+r.matches+'</td><td>'+r.wins+'</td><td>'+(r.diff>0?'+':'')+r.diff+'</td><td class="pts">'+r.pts+'</td>'+
+      (showNights?'<td>'+r.avg.toFixed(1)+'</td>':'')+'</tr>';
+  });
+  return h+'</tbody></table></div>';
+}
+function nightDetail(nid){
+  var n=S.nights[nid];if(!n)return '';
+  var p=nightProgress(nid),rounds={};
+  (n.matches||[]).forEach(function(x){(rounds[x.r]=rounds[x.r]||[]).push(x)});
+  var h='<div class="row"><button class="btn ghost" type="button" data-act="closeNight">← Sve večeri</button></div>'+
+    '<div class="ch"><div><h2 style="margin:0">'+esc(n.name||'Padel večer')+'</h2><p class="meta">'+esc(fmtLong(n.date))+' · '+(n.players||[]).length+' igrača'+(n.target?' · do '+n.target+' poena':'')+' · '+p.done+'/'+p.total+' mečeva upisano</p></div>'+delBtn('night:'+nid)+'</div>'+
+    '<h2>Stanje večeri</h2><div class="card">'+tableOf(standings([nid]),false)+'<p class="note">Bodovi su osvojeni poeni u mečevima. Svaki igrač dobiva poene svoje strane.</p></div>';
+  Object.keys(rounds).sort(function(a,b){return a-b}).forEach(function(r){
+    h+='<h2>Runda '+(+r+1)+'</h2><div class="card round">';
+    rounds[r].sort(function(a,b){return a.m-b.m}).forEach(function(x){
+      var s=scoreOf(nid,x),k=x.r+'_'+x.m;
+      function inp(side,val){return '<input type="number" inputmode="numeric" min="0" max="99" id="sc-'+nid+'-'+k+side+'" aria-label="Poeni '+(side==='a'?'prve':'druge')+' strane" data-score="'+esc(nid)+'|'+k+'|'+side+'" value="'+(val===null?'':val)+'">'}
+      h+='<div class="match"><div class="side">'+esc(nameOf(x.a1))+' &amp; '+esc(nameOf(x.a2))+'</div><div class="sc">'+inp('a',s.a)+':'+inp('b',s.b)+'</div><div class="side r">'+esc(nameOf(x.b1))+' &amp; '+esc(nameOf(x.b2))+'</div></div>';
+    });
+    h+='</div>';
+  });
+  return h;
+}
+function viewVecer(){
+  var ids=Object.keys(S.nights).sort(function(a,b){return (S.nights[a].date<S.nights[b].date)?1:-1});
+  if(S.openNight&&S.nights[S.openNight])return nightDetail(S.openNight);
+  var h='<h2>Padel večeri</h2>';
+  h+=ids.length?'<div class="stack">'+ids.map(function(id){
+    var n=S.nights[id],p=nightProgress(id),st=standings([id]),lead=st[0];
+    return '<article class="card"><div class="ch"><div><h3>'+esc(n.name||'Padel večer')+'</h3><p class="meta">'+esc(fmtLong(n.date))+' · '+(n.players||[]).length+' igrača</p></div>'+
+      '<span class="badge'+(p.done===p.total&&p.total?' ok':'')+'">'+p.done+'/'+p.total+' mečeva</span></div>'+
+      (lead?'<p class="meta" style="margin:0">Vodi: <strong>'+esc(nameOf(lead.id))+'</strong> ('+lead.pts+' bodova)</p>':'')+
+      '<div><button class="btn" type="button" data-act="openNight" data-nid="'+esc(id)+'">Otvori i upiši rezultate</button></div></article>';
+  }).join('')+'</div>':'<div class="empty">Nema večeri. Napravi novu: odaberi 8 igrača i aplikacija složi 7 rundi tako da svatko igra u paru sa svakim.</div>';
+  var sel=S.nn.sel,count=Object.keys(sel).filter(function(k){return sel[k]}).length;
+  var okCount=count>=4&&count%4===0;
+  var chips=playerIds().map(function(id){
+    var on=!!sel[id];
+    return '<button type="button" class="chip'+(on?' sel':'')+'" data-act="toggleNew" data-pid="'+esc(id)+'" aria-pressed="'+on+'">'+esc(nameOf(id))+'</button>';
+  }).join('');
+  h+='<h2>Nova večer</h2><details class="card" id="d-newnight"'+(ids.length?'':' open')+'><summary>Složi americano</summary>'+
+    '<div class="grid"><label class="f full">Naziv<input type="text" id="nn-name" data-keep maxlength="60" value="Padel večer"></label>'+
+    '<label class="f">Datum<input type="date" id="nn-date" data-keep value="'+iso(new Date())+'"></label>'+
+    '<label class="f">Igra se do (poena)<input type="number" id="nn-target" data-keep min="0" max="99" value="16"></label></div>'+
+    '<p class="sec-t">Igrači ('+count+')</p><div class="chips">'+(chips||'<span class="note">Nitko se još nije upisao. Dodaj igrače ispod.</span>')+'</div>'+
+    '<p class="note">'+(okCount?'Broj igrača je u redu: '+(count-1)+' rundi, '+(count/4)+' meč(a) po rundi.':'Treba 4, 8 ili 12 igrača da svatko igra svaku rundu.')+'</p>'+
+    '<div class="row"><input type="text" id="nn-guest" data-keep maxlength="30" placeholder="Dodaj igrača koji nema račun" style="flex:1;min-width:180px"><button class="btn sec" type="button" data-act="addGuest">Dodaj igrača</button></div>'+
+    '<div><button class="btn" type="button" data-act="createNight"'+(okCount?'':' disabled')+'>Složi raspored</button></div></details>';
+  return h;
+}
+function viewLjestvica(){
+  var all=standings(Object.keys(S.nights));
+  var nightsDone=Object.keys(S.nights).filter(function(id){return nightProgress(id).done>0}).length;
+  return '<h2>Ukupna ljestvica</h2><div class="card">'+tableOf(all,true)+
+    '<p class="note">Zbroj poena iz svih večeri ('+nightsDone+' s upisanim rezultatima). Poredak: bodovi, zatim razlika, zatim pobjede. Prosjek po meču pokazuje tko je bolji kad se ne igra jednak broj večeri.</p></div>';
+}
+
+function render(){
+  var ae=document.activeElement;
+  if(ae&&app.contains(ae)&&/^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName)){S.pending=true;return}
+  S.pending=false;
+  document.querySelectorAll('nav.tabs button').forEach(function(b){
+    if(b.dataset.tab===S.tab)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');
+  });
+  var who=$('#who');
+  if(S.players[uid]){who.hidden=false;who.textContent=S.players[uid].name}else who.hidden=true;
+  var keep={},opens={};
+  app.querySelectorAll('[data-keep]').forEach(function(e){keep[e.id]=e.value});
+  app.querySelectorAll('details[id]').forEach(function(e){opens[e.id]=e.open});
+  var h='';
+  if(S.err)h+='<div class="banner">Podaci se ne mogu učitati ('+esc(S.err)+'). Osvježi stranicu.</div>';
+  else if(S.slow&&!allLoaded())h+='<div class="banner">Podaci se još učitavaju. Provjeri vezu.</div>';
+  if(allLoaded())h+=nameBanner();
+  if(!allLoaded()&&!S.err)h+='<div class="empty">Učitavam…</div>';
+  else h+= S.tab==='liga'?viewLiga():S.tab==='vecer'?viewVecer():S.tab==='ljestvica'?viewLjestvica():viewTermini();
+  app.innerHTML=h;
+  app.querySelectorAll('[data-keep]').forEach(function(e){if(e.id in keep)e.value=keep[e.id]});
+  app.querySelectorAll('details[id]').forEach(function(e){if(e.id in opens)e.open=opens[e.id]});
+}
+function allLoaded(){return ['players','events','rsvps','lineups','nights','scores'].every(function(k){return S.loaded[k]})}
+
+function val(id){var e=document.getElementById(id);return e?e.value.trim():''}
+function clear(ids){ids.forEach(function(id){var e=document.getElementById(id);if(e)e.value=''})}
+var actions={
+  saveName:function(){
+    var n=val('my-name');if(!n){toast('Upiši ime.');return}
+    S.renaming=false;S.players[uid]={name:n,guest:false};render();
+    run(sb.from('players').upsert({id:uid,name:n,guest:false}));
+  },
+  vote:function(t){
+    var eid=t.dataset.eid,v=t.dataset.v;if(myVote(eid)===v)v='';
+    var r=S.rsvps[uid]||(S.rsvps[uid]={votes:{}});
+    if(v)r.votes[eid]=v;else delete r.votes[eid];
+    render();
+    run(v?sb.from('rsvps').upsert({event_id:eid,player_id:uid,vote:v}):sb.from('rsvps').delete().eq('event_id',eid).eq('player_id',uid));
+  },
+  addEvent:function(){
+    var title=val('ne-title'),date=val('ne-date');
+    if(!date){toast('Odaberi datum.');return}
+    var id=newId();
+    S.events[id]={title:title||'Padel',date:date,time:val('ne-time'),place:val('ne-place')};
+    clear(['ne-title','ne-date','ne-time','ne-place']);render();
+    run(sb.from('events').insert({id:id,title:title||'Padel',date:date,time:S.events[id].time,place:S.events[id].place,created_by:uid})).then(function(){refresh('events')});
+  },
+  del:function(t){
+    var key=t.dataset.key;
+    if(S.confirm!==key){S.confirm=key;render();return}
+    S.confirm='';
+    if(key.indexOf('ev:')===0){
+      var id=key.slice(3);delete S.events[id];
+      run(sb.from('rsvps').delete().eq('event_id',id));
+      run(sb.from('lineups').delete().eq('event_id',id));
+      run(sb.from('events').delete().eq('id',id));
+    }
+    if(key.indexOf('night:')===0){
+      var nid=key.slice(6);S.openNight=null;delete S.nights[nid];delete S.scores[nid];
+      run(sb.from('scores').delete().eq('night_id',nid));
+      run(sb.from('nights').delete().eq('id',nid));
+    }
+    render();
+  },
+  saveLiga:function(t){
+    var d=t.dataset.date,eid='liga-'+d;
+    var row={id:eid,title:'Liga',date:d,time:val('lm-time-'+d),opponent:val('lm-opp-'+d),place:val('lm-place-'+d)};
+    S.events[eid]=row;
+    run(sb.from('events').upsert(row)).then(function(){toast('Detalji spremljeni.');refresh('events')});
+  },
+  toggleLineup:function(t){
+    var eid=t.dataset.eid,pid=t.dataset.pid,L=S.lineups[eid]||{},sel=(L.players||[]).slice();
+    var i=sel.indexOf(pid);if(i>-1)sel.splice(i,1);else sel.push(pid);
+    S.lineups[eid]={players:sel,sent:!!L.sent};render();
+    run(sb.from('lineups').upsert({event_id:eid,players:sel,sent:!!L.sent}));
+  },
+  toggleSent:function(t){
+    var eid=t.dataset.eid,L=S.lineups[eid]||{};
+    S.lineups[eid]={players:L.players||[],sent:!L.sent};render();
+    run(sb.from('lineups').upsert({event_id:eid,players:L.players||[],sent:!L.sent}));
+  },
+  copyLineup:function(t){
+    var eid=t.dataset.eid,L=S.lineups[eid]||{},sel=L.players||[];
+    var text='Postava za ponedjeljak, '+fmtShort(t.dataset.date)+'\n'+sel.map(function(id,i){return (i+1)+'. '+nameOf(id)}).join('\n');
+    try{navigator.clipboard.writeText(text).then(function(){toast('Postava kopirana.')},function(){toast('Kopiranje nije uspjelo. Označi tekst ručno.')})}
+    catch(e){toast('Kopiranje nije uspjelo. Označi tekst ručno.')}
+  },
+  toggleNew:function(t){var id=t.dataset.pid;S.nn.sel[id]=!S.nn.sel[id];render()},
+  addGuest:function(){
+    var n=val('nn-guest');if(!n){toast('Upiši ime igrača.');return}
+    var id='g'+newId();
+    S.players[id]={name:n,guest:true};S.nn.sel[id]=true;clear(['nn-guest']);render();
+    run(sb.from('players').insert({id:id,name:n,guest:true}));
+  },
+  createNight:function(){
+    var ids=Object.keys(S.nn.sel).filter(function(k){return S.nn.sel[k]&&S.players[k]});
+    if(ids.length<4||ids.length%4!==0){toast('Treba 4, 8 ili 12 igrača.');return}
+    ids=shuffle(ids);
+    var id=newId();
+    var row={id:id,name:val('nn-name')||'Padel večer',date:val('nn-date')||iso(new Date()),target:Math.max(0,parseInt(val('nn-target'),10)||0),players:ids,matches:makeMatches(ids)};
+    S.nights[id]={name:row.name,date:row.date,target:row.target,players:ids,matches:row.matches};
+    S.nn={sel:{}};S.openNight=id;render();
+    run(sb.from('nights').insert(row)).then(function(){refresh('nights')});
+  },
+  openNight:function(t){S.openNight=t.dataset.nid;render();window.scrollTo(0,0)},
+  closeNight:function(){S.openNight=null;render()}
+};
+document.addEventListener('click',function(e){
+  var tab=e.target.closest('[data-tab]');
+  if(tab){location.hash=tab.dataset.tab;return}
+  if(e.target.closest('#who')){S.renaming=true;render();return}
+  var t=e.target.closest('[data-act]');
+  if(t&&actions[t.dataset.act]&&sb)actions[t.dataset.act](t);
+});
+document.addEventListener('change',function(e){
+  var t=e.target;if(!t.dataset||!t.dataset.score||!sb)return;
+  var parts=t.dataset.score.split('|'),nid=parts[0],key=parts[1],side=parts[2];
+  var n=S.nights[nid];if(!n)return;
+  var v=t.value===''?null:Math.max(0,Math.min(99,Math.floor(Number(t.value))));
+  var sc=S.scores[nid]||(S.scores[nid]={});
+  var other=side==='a'?'b':'a';
+  if(v===null)delete sc[key+side];else sc[key+side]=v;
+  var otherEl=document.getElementById('sc-'+nid+'-'+key+other);
+  if(v!==null&&n.target>0&&v<=n.target&&sc[key+other]==null&&otherEl&&otherEl.value==='')sc[key+other]=n.target-v;
+  var a=typeof sc[key+'a']==='number'?sc[key+'a']:null,b=typeof sc[key+'b']==='number'?sc[key+'b']:null;
+  render();
+  if(a===null&&b===null)run(sb.from('scores').delete().eq('night_id',nid).eq('key',key));
+  else run(sb.from('scores').upsert({night_id:nid,key:key,a:a,b:b}));
+});
+app.addEventListener('focusout',function(){if(S.pending)setTimeout(render,120)});
+function route(){
+  var h=(location.hash||'').replace('#','');
+  S.tab=TABS.indexOf(h)>-1?h:'termini';
+  render();
+}
+window.addEventListener('hashchange',route);
+
+function showMessage(t){app.innerHTML='<div class="empty">'+esc(t)+'</div>'}
+function getUid(){
+  try{var u=localStorage.getItem('padel_uid');if(!u){u='u'+newId();localStorage.setItem('padel_uid',u)}return u}
+  catch(e){return 'u'+newId()}
+}
+(function(){
+  if(CFG.url.indexOf('PASTE')===0){showMessage('Aplikacija još nije povezana s bazom.');return}
+  if(typeof supabase==='undefined'||!supabase.createClient){showMessage('Ne mogu učitati biblioteku za bazu. Provjeri vezu i osvježi stranicu.');return}
+  sb=supabase.createClient(CFG.url,CFG.key);
+  uid=getUid();
+  S.tab=TABS.indexOf((location.hash||'').replace('#',''))>-1?(location.hash||'').replace('#',''):'termini';
+  setTimeout(function(){S.slow=true;if(!allLoaded())render()},10000);
+  TABLES.forEach(function(t){refresh(t)});
+  try{sb.channel('padel').on('postgres_changes',{event:'*',schema:'public'},function(p){scheduleRefresh(p.table)}).subscribe()}catch(e){}
+  setInterval(function(){TABLES.forEach(function(t){refresh(t)})},20000);
+  render();
+})();
+})();
+</script>
+</body>
+</html>
